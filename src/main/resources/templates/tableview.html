@@ -1,0 +1,35 @@
+<!-- Record data section -->
+<div class="border p-3 mt-3 mb-3 rounded">
+    <table class="table table-striped">
+        <tr>
+            <th>Route</th>
+            <th>Miles</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+
+        <tr th:if = "${empty}">
+            <td colspan="4"
+                th:text="${message}"
+                class="text-center">
+            </td>
+        </tr>
+
+        <tr th:if="${hasRecord}"
+            th:each="activityRecord : ${activityRecordsList}">
+
+            <td th:text="${activityRecord.routeName}"></td>
+
+            <td th:text="${activityRecord.miles}"></td>
+
+            <td th:text="${activityRecord.date}"></td>
+
+            <td>
+                <a th:href="@{/delete_activity(id=${activityRecord.activityID})}">
+                    <i class="bi bi-trash text-danger"></i>
+                </a>
+            </td>
+
+        </tr>
+    </table>
+</div>
