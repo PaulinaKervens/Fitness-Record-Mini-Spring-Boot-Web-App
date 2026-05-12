@@ -32,7 +32,7 @@ public class ActivityController {
     @PostMapping("/add_activity_record")
     private String addNewActivityRecord(String route, double miles, LocalDate date, Model model) {
         ActivityRecord activityRecord = new ActivityRecord(route, miles, date);     // Create a new activity object
-        if (valid(activityRecord)) {
+        if (isValidRecord(activityRecord)) {
             activityRepository.save(activityRecord);  // Query to insert a new record to the db
             model.addAttribute("success", "success");
             model.addAttribute("message", "A new Activity has been added to the tracker app.");
@@ -50,13 +50,20 @@ public class ActivityController {
      */
     private String displayActivityRecord(Model model) {
         List<ActivityRecord> activityRecordsList = getAllActivity();
+        final double milesRan = getTotalMilesRan(activityRecordsList);
+        final int totalRecord = activityRecordsList.size();
+
         // Check if the list is empty to add a default msg to the table
         if (activityRecordsList.isEmpty()) {
             model.addAttribute("empty", true);
             model.addAttribute("message", "You haven't added any activity record yet.");
+            model.addAttribute("recordCount", totalRecord);
+            model.addAttribute("milesRan", milesRan);
         } else {
             model.addAttribute("hasRecord", true);
             model.addAttribute("activityRecordsList", activityRecordsList);
+            model.addAttribute("recordCount", totalRecord);
+            model.addAttribute("milesRan", milesRan);
         }
         return "index";
     }
@@ -78,13 +85,21 @@ public class ActivityController {
      * @param activityRecord An object from activity.
      * @return True / False
      */
-    private boolean valid(ActivityRecord activityRecord) {
+    private boolean isValidRecord(ActivityRecord activityRecord) {
         return (
                 activityRecord.getDate() != null &&
                 activityRecord.getRouteName() != null &&
                 !activityRecord.getRouteName().trim().isEmpty() &&
                 activityRecord.getMiles() >= 1.0
         );
+    }
+
+    private double getTotalMilesRan(List<ActivityRecord> activityRecordsList) {
+        double milesRan = 0.0;
+        for (ActivityRecord ac : activityRecordsList) {
+            milesRan += ac.getMiles();
+        }
+        return milesRan;
     }
 
 }
